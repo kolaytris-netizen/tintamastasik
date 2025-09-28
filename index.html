@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet.photon.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet.photon.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/DATA_KLASTER2_1.js"></script>
+        <script src="data/DATA_Inovasi_2.js"></script>
+        <script src="data/BATAS_ADMINITRASI_AR_Kec_3.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[-7.8483093841036835,107.61297776614072],[-7.00950552544138,108.73128711463953]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_EsriWorldImagery_0');
+        map.getPane('pane_EsriWorldImagery_0').style.zIndex = 400;
+        var layer_EsriWorldImagery_0 = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_EsriWorldImagery_0',
+            opacity: 1.0,
+            attribution: '<a href="https://wiki.openstreetmap.org/wiki/Esri">Terms & Feedback</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 22
+        });
+        layer_EsriWorldImagery_0;
+        map.addLayer(layer_EsriWorldImagery_0);
+        function pop_DATA_KLASTER2_1(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">STUNTING</th>\
+                        <td>' + (feature.properties['STUNTING'] !== null ? autolinker.link(String(feature.properties['STUNTING']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">AKSIBERGIZ</th>\
+                        <td>' + (feature.properties['AKSIBERGIZ'] !== null ? autolinker.link(String(feature.properties['AKSIBERGIZ']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">REMATRI_PE</th>\
+                        <td>' + (feature.properties['REMATRI_PE'] !== null ? autolinker.link(String(feature.properties['REMATRI_PE']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_DATA_KLASTER2_1_0(feature) {
+            switch(String(feature.properties['STUNTING'])) {
+                case '0.0':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(189,47,225,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2.4':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(221,52,69,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '4.2':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(198,225,79,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '4.4':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(167,97,210,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '4.5':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(124,36,232,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '4.8':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(230,109,210,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '4.9':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(38,202,52,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '5.1':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(213,143,90,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '5.9':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(204,149,55,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '6.2':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(239,48,137,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '6.4':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(157,205,74,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '7.0':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,85,36,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '7.5':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(39,231,18,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '8.0':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(38,55,205,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '8.1':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(21,219,146,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '9.1':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(126,217,217,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '9.4':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(17,207,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '9.5':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(73,182,204,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '9.7':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(27,83,226,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '9.8':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(216,110,218,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '10.0':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(206,42,31,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '11.5':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(59,160,214,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '11.7':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(131,234,159,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '13.3':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(73,22,213,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '13.5':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,229,24,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '14.0':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(130,170,216,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '14.1':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(139,130,231,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '14.9':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(130,222,94,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '16.2':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(225,116,147,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '16.9':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(210,49,154,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '17.0':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(59,204,124,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '45671.0':
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(218,187,49,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_DATA_KLASTER2_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(122,240,25,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_DATA_KLASTER2_1');
+        map.getPane('pane_DATA_KLASTER2_1').style.zIndex = 401;
+        map.getPane('pane_DATA_KLASTER2_1').style['mix-blend-mode'] = 'normal';
+        var layer_DATA_KLASTER2_1 = new L.geoJson(json_DATA_KLASTER2_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DATA_KLASTER2_1',
+            layerName: 'layer_DATA_KLASTER2_1',
+            pane: 'pane_DATA_KLASTER2_1',
+            onEachFeature: pop_DATA_KLASTER2_1,
+            style: style_DATA_KLASTER2_1_0,
+        });
+        bounds_group.addLayer(layer_DATA_KLASTER2_1);
+        function pop_DATA_Inovasi_2(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">KECAMATAN</th>\
+                        <td class="visible-with-data" id="KECAMATAN">' + (feature.properties['KECAMATAN'] !== null ? autolinker.link(String(feature.properties['KECAMATAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INOVASI1</th>\
+                        <td class="visible-with-data" id="INOVASI1">' + (feature.properties['INOVASI1'] !== null ? autolinker.link(String(feature.properties['INOVASI1']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INOVASI2</th>\
+                        <td>' + (feature.properties['INOVASI2'] !== null ? autolinker.link(String(feature.properties['INOVASI2']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INOVASI3</th>\
+                        <td>' + (feature.properties['INOVASI3'] !== null ? autolinker.link(String(feature.properties['INOVASI3']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INOVASI4</th>\
+                        <td>' + (feature.properties['INOVASI4'] !== null ? autolinker.link(String(feature.properties['INOVASI4']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INOVASI5</th>\
+                        <td>' + (feature.properties['INOVASI5'] !== null ? autolinker.link(String(feature.properties['INOVASI5']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INOVASI6</th>\
+                        <td>' + (feature.properties['INOVASI6'] !== null ? autolinker.link(String(feature.properties['INOVASI6']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INOVASI7</th>\
+                        <td>' + (feature.properties['INOVASI7'] !== null ? autolinker.link(String(feature.properties['INOVASI7']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_DATA_Inovasi_2_0(feature) {
+            switch(String(feature.properties['INOVASI1'])) {
+                case 'AYU TINGTING (Hayu turunkan angka stunting)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(79,97,211,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'BAKPIA':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(214,177,44,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Banting Barang':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(214,211,13,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'BATIK ( Bati Resik )':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(205,109,54,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'BERAS GABAH':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(184,201,110,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'BESTI (Berantas TBC sampai Mati)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(19,91,235,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'BUKIT TILAR (Berburu Penyakit Tidak Menular)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(91,47,205,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'CEKER PEDAS MANIS':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(179,89,214,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'DASA-KE':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(48,132,200,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'DEMAM SEBLAK (Demo Masak Makanan Sehat Bagi Balita dan Keluarga)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(34,18,203,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'DONOR DARAH BAKTI ASIH':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(209,64,190,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'DORAYAKI':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(206,107,90,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'GELUT (Gerakan Eliminasi Untuk Tuberculosis':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(211,113,137,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'GENTING UCAP DAHLIA':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(165,202,109,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Karedok Sapanci':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(82,179,211,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Kelapa Kelabu (kelompok pengajian bapa2 dan ibu2)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(22,235,114,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'MAKARINDU':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(109,239,217,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'MIE INSTAN (Manajemen integrasi edukasi informasi kesehatan)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(82,207,51,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Moge (Mobile ODGJ)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(210,131,217,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Nodata':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pojok maseko':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(111,218,40,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'PRINCESS (PEDULI REMAJA INDONESIA CEGAH STUNTING SEKARANG)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(53,220,159,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Putsal':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(237,86,94,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'RUJAK SANTEN (Rujuk Dahak Saban Dinten)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(73,207,75,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'SAKINAH ( Sehat Menuju akad Nikah)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(216,57,131,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Si Jimat':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(64,226,99,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'SICEKING (Sistem Informasi Cegah Angka Stunting)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,179,114,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'SMART (Satuan Tugas Bersama)':
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(221,45,162,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_DATA_Inovasi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(152,99,205,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_DATA_Inovasi_2');
+        map.getPane('pane_DATA_Inovasi_2').style.zIndex = 402;
+        map.getPane('pane_DATA_Inovasi_2').style['mix-blend-mode'] = 'normal';
+        var layer_DATA_Inovasi_2 = new L.geoJson(json_DATA_Inovasi_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DATA_Inovasi_2',
+            layerName: 'layer_DATA_Inovasi_2',
+            pane: 'pane_DATA_Inovasi_2',
+            onEachFeature: pop_DATA_Inovasi_2,
+            style: style_DATA_Inovasi_2_0,
+        });
+        bounds_group.addLayer(layer_DATA_Inovasi_2);
+        function pop_BATAS_ADMINITRASI_AR_Kec_3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">WADMKC</th>\
+                        <td>' + (feature.properties['WADMKC'] !== null ? autolinker.link(String(feature.properties['WADMKC']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_BATAS_ADMINITRASI_AR_Kec_3_0() {
+            return {
+                pane: 'pane_BATAS_ADMINITRASI_AR_Kec_3',
+                opacity: 1,
+                color: 'rgba(244,244,244,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,113,72,0.0)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_BATAS_ADMINITRASI_AR_Kec_3');
+        map.getPane('pane_BATAS_ADMINITRASI_AR_Kec_3').style.zIndex = 403;
+        map.getPane('pane_BATAS_ADMINITRASI_AR_Kec_3').style['mix-blend-mode'] = 'normal';
+        var layer_BATAS_ADMINITRASI_AR_Kec_3 = new L.geoJson(json_BATAS_ADMINITRASI_AR_Kec_3, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_BATAS_ADMINITRASI_AR_Kec_3',
+            layerName: 'layer_BATAS_ADMINITRASI_AR_Kec_3',
+            pane: 'pane_BATAS_ADMINITRASI_AR_Kec_3',
+            onEachFeature: pop_BATAS_ADMINITRASI_AR_Kec_3,
+            style: style_BATAS_ADMINITRASI_AR_Kec_3_0,
+        });
+        bounds_group.addLayer(layer_BATAS_ADMINITRASI_AR_Kec_3);
+        map.addLayer(layer_BATAS_ADMINITRASI_AR_Kec_3);
+        const url = {"Nominatim OSM": "https://nominatim.openstreetmap.org/search?format=geojson&addressdetails=1&",
+        "France BAN": "https://api-adresse.data.gouv.fr/search/?"}
+        var photonControl = L.control.photon({
+            url: url["Nominatim OSM"],
+            feedbackLabel: '',
+            position: 'topleft',
+            includePosition: true,
+            initial: true,
+            // resultsHandler: myHandler,
+        }).addTo(map);
+        photonControl._container.childNodes[0].style.borderRadius="10px"
+        // Create a variable to store the geoJSON data
+        var x = null;
+        // Create a variable to store the marker
+        var marker = null;
+        // Add an event listener to the Photon control to create a marker from the returned geoJSON data
+        var z = null;
+        photonControl.on('selected', function(e) {
+            console.log(photonControl.search.resultsContainer);
+            if (x != null) {
+                map.removeLayer(obj3.marker);
+                map.removeLayer(x);
+            }
+            obj2.gcd = e.choice;
+            x = L.geoJSON(obj2.gcd).addTo(map);
+            var label = typeof obj2.gcd.properties.label === 'undefined' ? obj2.gcd.properties.display_name : obj2.gcd.properties.label;
+            obj3.marker = L.marker(x.getLayers()[0].getLatLng()).bindPopup(label).addTo(map);
+            map.setView(x.getLayers()[0].getLatLng(), 17);
+            z = typeof e.choice.properties.label === 'undefined'? e.choice.properties.display_name : e.choice.properties.label;
+            console.log(e);
+            e.target.input.value = z;
+        });
+        var search = document.getElementsByClassName("leaflet-photon leaflet-control")[0];
+        search.classList.add("leaflet-control-search")
+        search.style.display = "flex";
+        search.style.backgroundColor="rgba(255,255,255,0.5)" 
+
+        // Create the new button element
+        var button = document.createElement("div");
+        button.id = "gcd-button-control";
+        button.className = "gcd-gl-btn fa fa-search search-button";
+
+        // Insert the button at the beginning of the search control
+        search.insertBefore(button, search.firstChild);
+        last = search.lastChild;
+        last.style.display = "none";
+        button.addEventListener("click", function (e) {
+            if (last.style.display === "none") {
+                last.style.display = "block";
+            } else {
+                last.style.display = "none";
+            }
+        });
+        var overlaysTree = [
+            {label: '<img src="legend/BATAS_ADMINITRASI_AR_Kec_3.png" /> BATAS_ADMINITRASI_AR_Kec', layer: layer_BATAS_ADMINITRASI_AR_Kec_3},
+            {label: 'DATA_Inovasi<br /><table><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_AYUTINGTINGHayuturunkanangkastunting0.png" /></td><td>AYU TINGTING (Hayu turunkan angka stunting)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_BAKPIA1.png" /></td><td>BAKPIA</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_BantingBarang2.png" /></td><td>Banting Barang</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_BATIKBatiResik3.png" /></td><td>BATIK ( Bati Resik )</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_BERASGABAH4.png" /></td><td>BERAS GABAH</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_BESTIBerantasTBCsampaiMati5.png" /></td><td>BESTI (Berantas TBC sampai Mati)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_BUKITTILARBerburuPenyakitTidakMenular6.png" /></td><td>BUKIT TILAR (Berburu Penyakit Tidak Menular)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_CEKERPEDASMANIS7.png" /></td><td>CEKER PEDAS MANIS</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_DASAKE8.png" /></td><td>DASA-KE</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_DEMAMSEBLAKDemoMasakMakananSehatBagiBalitadanKeluarga9.png" /></td><td>DEMAM SEBLAK (Demo Masak Makanan Sehat Bagi Balita dan Keluarga)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_DONORDARAHBAKTIASIH10.png" /></td><td>DONOR DARAH BAKTI ASIH</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_DORAYAKI11.png" /></td><td>DORAYAKI</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_GELUTGerakanEliminasiUntukTuberculosis12.png" /></td><td>GELUT (Gerakan Eliminasi Untuk Tuberculosis</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_GENTINGUCAPDAHLIA13.png" /></td><td>GENTING UCAP DAHLIA</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_KaredokSapanci14.png" /></td><td>Karedok Sapanci</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_KelapaKelabukelompokpengajianbapa2danibu215.png" /></td><td>Kelapa Kelabu (kelompok pengajian bapa2 dan ibu2)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_MAKARINDU16.png" /></td><td>MAKARINDU</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_MIEINSTANManajemenintegrasiedukasiinformasikesehatan17.png" /></td><td>MIE INSTAN (Manajemen integrasi edukasi informasi kesehatan)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_MogeMobileODGJ18.png" /></td><td>Moge (Mobile ODGJ)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_Nodata19.png" /></td><td>Nodata</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_Pojokmaseko20.png" /></td><td>Pojok maseko</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_PRINCESSPEDULIREMAJAINDONESIACEGAHSTUNTINGSEKARANG21.png" /></td><td>PRINCESS (PEDULI REMAJA INDONESIA CEGAH STUNTING SEKARANG)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_Putsal22.png" /></td><td>Putsal</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_RUJAKSANTENRujukDahakSabanDinten23.png" /></td><td>RUJAK SANTEN (Rujuk Dahak Saban Dinten)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_SAKINAHSehatMenujuakadNikah24.png" /></td><td>SAKINAH ( Sehat Menuju akad Nikah)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_SiJimat25.png" /></td><td>Si Jimat</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_SICEKINGSistemInformasiCegahAngkaStunting26.png" /></td><td>SICEKING (Sistem Informasi Cegah Angka Stunting)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_SMARTSatuanTugasBersama27.png" /></td><td>SMART (Satuan Tugas Bersama)</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_Inovasi_2_28.png" /></td><td></td></tr></table>', layer: layer_DATA_Inovasi_2},
+            {label: 'DATA_KLASTER2<br /><table><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_00.png" /></td><td>0</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_24000001.png" /></td><td>2,400000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_42000002.png" /></td><td>4,200000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_44000003.png" /></td><td>4,400000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_45000004.png" /></td><td>4,500000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_48000005.png" /></td><td>4,800000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_49000006.png" /></td><td>4,900000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_51000007.png" /></td><td>5,100000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_59000008.png" /></td><td>5,900000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_62000009.png" /></td><td>6,200000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_640000010.png" /></td><td>6,400000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_700000011.png" /></td><td>7,000000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_750000012.png" /></td><td>7,500000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_800000013.png" /></td><td>8,000000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_810000014.png" /></td><td>8,100000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_910000015.png" /></td><td>9,100000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_940000016.png" /></td><td>9,400000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_950000017.png" /></td><td>9,500000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_970000018.png" /></td><td>9,700000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_980000019.png" /></td><td>9,800000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1000000020.png" /></td><td>10,000000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1150000021.png" /></td><td>11,500000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1170000022.png" /></td><td>11,700000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1330000023.png" /></td><td>13,300000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1350000024.png" /></td><td>13,500000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1400000025.png" /></td><td>14,000000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1410000026.png" /></td><td>14,100000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1490000027.png" /></td><td>14,900000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1620000028.png" /></td><td>16,200000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1690000029.png" /></td><td>16,900000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_1700000030.png" /></td><td>17,000000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_4567100000031.png" /></td><td>45671,000000</td></tr><tr><td style="text-align: center;"><img src="legend/DATA_KLASTER2_1_32.png" /></td><td></td></tr></table>', layer: layer_DATA_KLASTER2_1},
+            {label: "Esri World Imagery", layer: layer_EsriWorldImagery_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
